@@ -1,0 +1,87 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Webscraping NBA Stats</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">NBA Predictiive Analysis</a>
+				<nav>
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="webscraping.html" class="active">Webscraping</a></li>
+                        <li><a href="machineLearning.html">Machine Learning</a></li>
+                        <li><a href="objectives.html">Objectives</a></li>
+						<li><a href="elements.html">Add Later</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
+							<h1 class="major">Webscraping Details</h1>
+							<span class="image fit"><img src="images/webScape2.jpg" alt="" /></span>
+							<p>Using a separate proprietary web scraping application, NBA stats over the past decade were retreieved for every game played.</p>
+                            <p>*Raw Average stats were calculated by taking the raw average of the combined Statistic for a given team/player. 
+                                Home and Away statistics were also filtered to get a better understanding of Home Advantage.
+                                Adjusted stats were then calculated to compensate for data imbalances due to varying oppenents' and other outlying figures.
+                            </p>
+							<ul style="height: 300px; overflow:auto">Types of Statistics inlcuded:
+                                <li>Points Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Rebounds Per Game (per Team and Player) (Defensive and Offensive) (Raw Average and Adjusted*)</li>
+                                <li>Assists Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Turnovers Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Tempo Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Offensive Efficiency Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Defensive Efficiency Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Field Goal Attempts Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Field Goals Made Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Field Goal Percentage Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Effective Field Goal Efficiency Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>3 Point Field Goal Attempts Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>3 Point Field Goals Made Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>3 Point Field Goal Percentage Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>Free Throw Attempts Per Game (per Team and Player) (Raw Average and Adjusted*)</li>
+                                <li>etc..</li>
+                            </ul>
+                            <p>
+                                All of these statistics were located in a central data file to feed into the Machine Learning Model in order to get predictive analysis.
+                            </p>
+                            <ul class="actions">
+                                <li><a href="machineLearning.html" class="button">Go To ML page</a></li>
+                            </ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; MB13. All rights reserved.</li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

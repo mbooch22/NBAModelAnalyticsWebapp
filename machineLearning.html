@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>ML Details</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<a href="index.html" class="title">NBA Predictive Analysis</a>
+				<nav>
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="webscraping.html">Web Scraping</a></li>
+						<li><a href="machineLearning.html" class="active">Machine Learning</a></li>
+                        <li><a href="objectives.html">Objectives</a></li>
+                        <li><a href="elements.html">Add Later</a></li>
+					</ul>
+				</nav>
+			</header>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<section id="main" class="wrapper">
+						<div class="inner">
+							<h1 class="major">Machine Learning Details</h1>
+							<span class="image fit"><img src="images/machineLean2.jpg" alt="" /></span>
+							<p>After retrieving and configuring all the advanced statistics from the Web Scraping app, the data is used to train a Machine Learning Model on AWS Amazon Sagemaker.</p>
+                            <p>The model is trained to predict various stats for any game being played by any two teams. 
+                               For any prediction being made, fresh data (at least updated from the last two weeks) for the two teams playing is fetched, 
+                               using the existing Webscraping application. This new data set has all the required fields/statistics for the model to make 
+                               a prediction but this time the Model will not have the values it is trying to predict. 
+                            </p>
+                            <ul>Using this newly fetched data, the Model can currently predict the following statistics:
+                                <li>Winning Percentage (equivalent to Moneyline)</li>
+                                <li>Point Margin (Spread)</li>
+                                <li>Game Total Points (Over/Under)</li>
+                                <li>Home Team Total Points (O/U)</li>
+                                <li>Away Team Total Points (O/U)</li>
+                                <li>Leading Scorer Total Points (O/U)</li>
+                            </ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>&copy; MB13. All rights reserved.</li>
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>

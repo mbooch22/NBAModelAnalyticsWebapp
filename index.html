@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>TEST</title>
+		<title>NBA Predictive Analytics</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -19,8 +19,8 @@
 				<div class="inner">
 					<nav>
 						<ul>
-							<li><a href="#intro">Welcome</a></li>
-							<li><a href="#one">Who we are</a></li>
+							<li><a href="#intro">Home</a></li>
+							<li><a href="#one">About</a></li>
 							<li><a href="#two">What we do</a></li>
 							<li><a href="#three">Get in touch</a></li>
 						</ul>
@@ -34,9 +34,11 @@
 				<!-- Intro -->
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
-							<h1>Hyperspace</h1>
-							<p>Just another fine responsive site template designed by <a href="http://html5up.net">HTML5 UP</a><br />
-							and released for free under the <a href="http://html5up.net/license">Creative Commons</a>.</p>
+							<h1>NBA Predictive Analysis Using Maching Learning</h1>
+							<p>
+                                Using NBA statistics over the course of the last decade, a Machine Learning model was trained using AWS Amazon Sagemaker
+                                in order to predict statistics for future games.
+                            </p>
 							<ul class="actions">
 								<li><a href="#one" class="button scrolly">Learn more</a></li>
 							</ul>
@@ -46,37 +48,41 @@
 				<!-- One -->
 					<section id="one" class="wrapper style2 spotlights">
 						<section>
-							<a href="#" class="image"><img src="images/pic01.jpg" alt="" data-position="center center" /></a>
-							<div class="content">
+                            <div class="content" style="width: 800px;">
+							<a class="image" style="width: 530px; height: 370px;"><img src="images/webScraping.jpg" alt="" data-position="center center" /></a>
+							</div>
+                            <div class="content">
 								<div class="inner">
-									<h2>Sed ipsum dolor</h2>
-									<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
+									<h2>Web Scraping</h2>
+									<p>Using a separate proprietary web scraping web app, NBA stats over the past decade were retreieved for every game played.</p>
 									<ul class="actions">
-										<li><a href="generic.html" class="button">Learn more</a></li>
+										<li><a href="webscraping.html" class="button">Learn more</a></li>
 									</ul>
 								</div>
 							</div>
 						</section>
 						<section>
-							<a href="#" class="image"><img src="images/pic02.jpg" alt="" data-position="top center" /></a>
+							<a class="image" style="width: 800px;"><img src="images/machineLearning1.jpg" alt="" data-position="top center" /></a>
 							<div class="content">
 								<div class="inner">
-									<h2>Feugiat consequat</h2>
-									<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
+									<h2>Machine Learning</h2>
+									<p>After retrieving and configuring all the advanced statistics from the Web Scraping app, the data was used to train a Machine Learning Model on AWS Amazon Sagemaker.</p>
 									<ul class="actions">
-										<li><a href="generic.html" class="button">Learn more</a></li>
+										<li><a href="machineLearning.html" class="button">Learn more</a></li>
 									</ul>
 								</div>
 							</div>
 						</section>
 						<section>
-							<a href="#" class="image"><img src="images/pic03.jpg" alt="" data-position="25% 25%" /></a>
 							<div class="content">
 								<div class="inner">
-									<h2>Ultricies aliquam</h2>
-									<p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
+									<h2>Objectives</h2>
+									<p>The predictions of the Model are used against the corresponding Vegas Odds.
+                                        Various thresholds are used to determine the optimal chances of the model being more accurate
+                                        than Sportsbooks.
+                                    </p>
 									<ul class="actions">
-										<li><a href="generic.html" class="button">Learn more</a></li>
+										<li><a href="objectives.html" class="button">Learn more</a></li>
 									</ul>
 								</div>
 							</div>

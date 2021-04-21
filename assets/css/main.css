@@ -1821,6 +1821,7 @@ input, select, textarea {
 	input[type="submit"],
 	input[type="reset"],
 	input[type="button"],
+    input[type="date"],
 	button,
 	.button {
 		-moz-appearance: none;
@@ -1855,6 +1856,7 @@ input, select, textarea {
 		input[type="submit"]:after,
 		input[type="reset"]:after,
 		input[type="button"]:after,
+        input[type="date"]:after,
 		button:after,
 		.button:after {
 			-moz-transform: scale(0.25);
@@ -1880,6 +1882,7 @@ input, select, textarea {
 		input[type="submit"].icon:before,
 		input[type="reset"].icon:before,
 		input[type="button"].icon:before,
+        input[type="date"].icon:before,
 		button.icon:before,
 		.button.icon:before {
 			margin-right: 0.75em;
@@ -1888,6 +1891,7 @@ input, select, textarea {
 		input[type="submit"].fit,
 		input[type="reset"].fit,
 		input[type="button"].fit,
+        input[type="date"].fit,
 		button.fit,
 		.button.fit {
 			width: 100%;
@@ -1896,6 +1900,7 @@ input, select, textarea {
 		input[type="submit"].small,
 		input[type="reset"].small,
 		input[type="button"].small,
+        input[type="date"].small,
 		button.small,
 		.button.small {
 			font-size: 0.4em;
@@ -1904,6 +1909,7 @@ input, select, textarea {
 		input[type="submit"].large,
 		input[type="reset"].large,
 		input[type="button"].large,
+        input[type="date"].large,
 		button.large,
 		.button.large {
 			font-size: 0.8em;
@@ -1912,6 +1918,7 @@ input, select, textarea {
 		input[type="submit"].primary,
 		input[type="reset"].primary,
 		input[type="button"].primary,
+        input[type="date"].primary,
 		button.primary,
 		.button.primary {
 			background-color: #ffffff;
@@ -1921,6 +1928,7 @@ input, select, textarea {
 			input[type="submit"].primary:after,
 			input[type="reset"].primary:after,
 			input[type="button"].primary:after,
+            input[type="date"].primary:after,
 			button.primary:after,
 			.button.primary:after {
 				display: none;
@@ -1931,6 +1939,8 @@ input, select, textarea {
 		input[type="reset"]:disabled,
 		input[type="button"].disabled,
 		input[type="button"]:disabled,
+        input[type="date"].disabled,
+        input[type="date"].disabled,
 		button.disabled,
 		button:disabled,
 		.button.disabled,
@@ -1943,6 +1953,7 @@ input, select, textarea {
 		input[type="submit"]:hover,
 		input[type="reset"]:hover,
 		input[type="button"]:hover,
+        input[type="date"]:hover,
 		button:hover,
 		.button:hover {
 			border-color: rgba(255, 255, 255, 0.55) !important;
@@ -1951,6 +1962,7 @@ input, select, textarea {
 			input[type="submit"]:hover:after,
 			input[type="reset"]:hover:after,
 			input[type="button"]:hover:after,
+            input[type="date"]:hover:after,
 			button:hover:after,
 			.button:hover:after {
 				opacity: 0.05;
@@ -1963,6 +1975,7 @@ input, select, textarea {
 			input[type="submit"]:hover:active,
 			input[type="reset"]:hover:active,
 			input[type="button"]:hover:active,
+            input[type="date"]:hover:active,
 			button:hover:active,
 			.button:hover:active {
 				border-color: #ffffff !important;
@@ -1971,6 +1984,7 @@ input, select, textarea {
 				input[type="submit"]:hover:active:after,
 				input[type="reset"]:hover:active:after,
 				input[type="button"]:hover:active:after,
+                input[type="date"]:hover:active:after,
 				button:hover:active:after,
 				.button:hover:active:after {
 					opacity: 0.1;
@@ -2771,6 +2785,7 @@ input, select, textarea {
 					ul.actions:not(.fixed) li input[type="submit"],
 					ul.actions:not(.fixed) li input[type="reset"],
 					ul.actions:not(.fixed) li input[type="button"],
+                    ul.actions:not(.fixed) li input[type="date"],
 					ul.actions:not(.fixed) li button,
 					ul.actions:not(.fixed) li .button {
 						width: 100%;
@@ -2779,6 +2794,7 @@ input, select, textarea {
 						ul.actions:not(.fixed) li input[type="submit"].icon:before,
 						ul.actions:not(.fixed) li input[type="reset"].icon:before,
 						ul.actions:not(.fixed) li input[type="button"].icon:before,
+                        ul.actions:not(.fixed) li input[type="date"].icon:before,
 						ul.actions:not(.fixed) li button.icon:before,
 						ul.actions:not(.fixed) li .button.icon:before {
 							margin-left: -0.5rem;
@@ -3257,6 +3273,10 @@ input, select, textarea {
 
 		.wrapper.style3 {
 			background-color: #b74e91;
+		}
+
+        .wrapper.style4 {
+			background-color: #3b5797;
 		}
 
 		.wrapper.style3-alt {

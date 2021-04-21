@@ -6,6 +6,96 @@
 -->
 <html>
 	<head>
+        <style>
+                .loader {
+                position: fixed;
+                z-index: 999;
+                height: 2em;
+                width: 2em;
+                overflow: visible;
+                margin: auto;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+                border: 16px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 16px solid #3498db;
+                width: 120px;
+                height: 120px;
+                -webkit-animation: spin 2s linear infinite; /* Safari */
+                animation: spin 2s linear infinite;
+                }
+
+                /* Safari */
+                @-webkit-keyframes spin {
+                0% { -webkit-transform: rotate(0deg); }
+                100% { -webkit-transform: rotate(360deg); }
+                }
+
+                @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+                }
+                .overlay {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0, 0, 0, 0.7);
+                transition: opacity 500ms;
+                visibility: hidden;
+                opacity: 0;
+                }
+                .overlay:target {
+                visibility: visible;
+                opacity: 1;
+                }
+
+                .popup {
+                margin: 70px auto;
+                padding: 20px;
+                background: #3b5797;
+                border-radius: 5px;
+                /*width: 30%;*/
+                position: relative;
+                transition: all 5s ease-in-out;
+                }
+
+                .popup h2 {
+                margin-top: 0;
+                color: #333;
+                font-family: Tahoma, Arial, sans-serif;
+                }
+                .popup .close {
+                position: absolute;
+                top: 20px;
+                right: 30px;
+                transition: all 200ms;
+                font-size: 30px;
+                font-weight: bold;
+                text-decoration: none;
+                color: rgb(255, 254, 254);
+                }
+                .popup .close:hover {
+                color: #06D85F;
+                }
+                .popup .content {
+                /*max-height: 30%;*/
+                overflow: auto;
+                }
+
+                @media screen and (max-width: 700px){
+                .box{
+                    width: 70%;
+                }
+                .popup{
+                    width: 70%;
+                }
+                }
+        </style>
+
 		<title>Results</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
@@ -13,7 +103,7 @@
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="is-preload">
-
+        <div class="loader"></div>
 		<!-- Header -->
 			<header id="header">
 				<a href="index.html" class="title">NBA Predictive Analysis</a>
@@ -36,9 +126,10 @@
 					<section id="main" class="wrapper">
 						<div class="inner">
 							<h1 class="major">NBA ML Prediction Results</h1>
-                            <div class="col-6 col-12-xsmall">
-                                <button id="filterButton" class="button fit">Show Filters</button>
-                            </div>
+                            <ul class="actions fit">
+                                <li><a id="showFilterButton" class="button fit">Show Filters</a></li>
+                                <li><a id="filterButton" class="button fit">Filter Data</a></li>
+                            </ul>
                             <br>
                             <div id="filters" class="row gtr-uniform">
                                 <div class="col-6 col-12-xsmall">
@@ -52,46 +143,46 @@
                                         min="2021-02-25">
                                 </div>
                                 <div class="col-6 col-12-xsmall">
-                                    <label for="prediction-type">Prediction Type (Bet Type)</label>
-                                    <select name="prediction-type" id="demo-category">
-                                        <option value="">- Type of Prediction/Bet -</option>
-                                        <option value="1">Manufacturing</option>
-                                        <option value="1">Shipping</option>
-                                        <option value="1">Administration</option>
-                                        <option value="1">Human Resources</option>
-                                    </select>
-                                </div>
-                                <div class="col-6 col-12-xsmall">
-                                    <label for="prediction-type">Model Versions</label>
-                                    <select name="prediction-type" id="demo-category">
-                                        <option value="">- Type of Prediction/Bet -</option>
-                                        <option value="1">Manufacturing</option>
-                                        <option value="1">Shipping</option>
-                                        <option value="1">Administration</option>
-                                        <option value="1">Human Resources</option>
+                                    <label for="model-version">Model Versions</label>
+                                    <select name="model-version" id="model-version">
+                                        <option value="">- Model Version -</option>
+                                        <option value="1">Version 1 - Spread Only</option>
+                                        <option value="Spread2, Total1-1">Version 2 - Spread and Total Only</option>
+                                        <option value="2W_2">Version 3 - Latest</option>
                                     </select>
                                 </div>
                                 <div class="col-12 col-12-small">
+                                    <label for="prediction-type">Prediction Type (Bet Type)</label>
                                     <div>
-                                        <input type="checkbox" id="wins" name="wins">
-                                        <label for="wins">Wins</label>
-                                        <input type="checkbox" id="losses" name="losses">
-                                        <label for="losses">Losses</label>
+                                        <input type="checkbox" id="margin" name="margin">
+                                        <label for="margin">Point Differential - Game Spread</label>
+                                        <input type="checkbox" id="total" name="total">
+                                        <label for="total">Game Total - Over/Under</label>
+                                        <input type="checkbox" id="win" name="win">
+                                        <label for="win">Win Percentage - Money Line</label>
+                                        <input type="checkbox" id="home" name="home">
+                                        <label for="home">Home Team Score - Over/Under</label>
+                                        <input type="checkbox" id="away" name="away">
+                                        <label for="away">Away Team Score - Over/Under</label>
                                     </div>
                                 </div>
                                 <div>
                                     <label>Thresholds:</label>
                                     <div class="col-4 col-12-small">
-                                        <input type="radio" id="no-threshold" name="threshold" checked>
+                                        <input type="radio" id="no-threshold" value="" name="threshold" checked>
                                         <label for="no-threshold">None</label>
                                     </div>
                                     <div class="col-4 col-12-small">
-                                        <input type="radio" id="threshold-1" name="threshold">
+                                        <input type="radio" id="threshold-1" value="Threshold1" name="threshold">
                                         <label for="threshold-1">Threshold 1 Predictions</label>
                                     </div>
                                     <div class="col-4 col-12-small">
-                                        <input type="radio" id="threshold-2" name="threshold">
+                                        <input type="radio" id="threshold-2" value="Threshold2" name="threshold">
                                         <label for="threshold-2">Threshold 2 Predictions</label>
+                                    </div>
+                                    <div class="col-4 col-12-small">
+                                        <input type="radio" id="threshold-3" value="Threshold3" name="threshold">
+                                        <label for="threshold-3">Threshold 3 Predictions</label>
                                     </div>
                                 </div>
                             </div>
@@ -99,49 +190,29 @@
 					</section>
                     <section class="wrapper">
                         <div class="inner">
-                            <div class="table-wrapper">
-                                <table class="alt">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Description</th>
-                                            <th>Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Item One</td>
-                                            <td>Ante turpis integer aliquet porttitor.</td>
-                                            <td>29.99</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Item Two</td>
-                                            <td>Vis ac commodo adipiscing arcu aliquet.</td>
-                                            <td>19.99</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Item Three</td>
-                                            <td> Morbi faucibus arcu accumsan lorem.</td>
-                                            <td>29.99</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Item Four</td>
-                                            <td>Vitae integer tempus condimentum.</td>
-                                            <td>19.99</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Item Five</td>
-                                            <td>Ante turpis integer aliquet porttitor.</td>
-                                            <td>29.99</td>
-                                        </tr>
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td colspan="2"></td>
-                                            <td>100.00</td>
-                                        </tr>
-                                    </tfoot>
-                                </table>
+                            <div class="features">
+                                <section>
+									<span class="icon solid major fa-chart-line"></span>
+									<h3>Profit</h3>
+                                    
+								</section>
+                                <section>
+									<span class="icon solid major fa-chart-pie"></span>
+									<h3>Win Percentage</h3>
+                                    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+								</section>
+                                <section>
+									<span class="icon solid major fa-chart-bar"></span>
+									<h3>Game Drop down in depth</h3>
+								</section>
+                                <section>
+                                    <span class="icon solid major fa-table"></span>
+                                    <h3>Raw Data</h3>
+                                    <div class="col-6 col-12-xsmall">
+                                        <a id="showRawDataButton" href="#popup1" class="button fit">Show Raw Data</a>
+                                    </div>
+                                </section>
+                            </div>
                         </div>
                     </section>
 
@@ -155,7 +226,59 @@
 					</ul>
 				</div>
 			</footer>
-
+        <!-- Popups -->
+        <div id="popup1" class="overlay">
+            <div class="popup">
+                <h2>Raw Data Table </h2>
+                <a class="close" href="#">&times;</a>
+                <div class="table-wrapper" style="height: 1000px;overflow:auto;">
+                    <table id="rawDataTable" class="alt">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Home Team</th>
+                                <th>Away Team</th>
+                                <th>Name</th>
+                                <th>Home Score</th>
+                                <th>Vegas Home</th>
+                                <th>Home Score Bet on</th>
+                                <th>BET HOME</th>
+                                <th>THRESHOLD_HOME</th>
+                                <th>Away Score</th>
+                                <th>Vegas Away</th>
+                                <th>Away Score Bet On</th>
+                                <th>BET AWAY</th>
+                                <th>Threshold_AWAY</th>
+                                <th>Winner</th>
+                                <th>Vegas MoneyLine Odds</th>
+                                <th>ML bet on</th>
+                                <th>BET WIN</th>
+                                <th>Threshold_ML</th>
+                                <th>Game Margin</th>
+                                <th>Vegas Odds</th>
+                                <th>Team Bet On</th>
+                                <th>BET SPREAD</th>
+                                <th>Threshold_SPREAD</th>
+                                <th>Total Points</th>
+                                <th>Vegas Over/Under</th>
+                                <th>Total Bet On</th>
+                                <th>BET TOTAL</th>
+                                <th>Threshold_TOTAL</th>
+                                <th>Model Version</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="2"></td>
+                                <td>100.00</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/jquery.scrollex.min.js"></script>
@@ -164,21 +287,263 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+            <script type="text/javascript" src="data.js"></script>
+            <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
             <script type="text/javascript">
                 $(document).ready(function(){
+
                   $("#filters").hide();
                   $("#filterButton").click(function(){
+                    window.nbaData = getData();
+                    var data = filterData(window.nbaData);
+                    setTable(data);
+                    setChart(data);
+                  });
+                  $("#showFilterButton").click(function(){
                       if($("#filters").is(":visible")){
                         $("#filters").hide();
-                        $("#filterButton").text("Show Filters")
+                        $("#showFilterButton").text("Show Filters")
                       } else {
                         $("#filters").show();
-                        $("#filterButton").text("Hide Filters")
+                        $("#showFilterButton").text("Hide Filters")
                       }
                     
                   });
+                  
                 });
-                </script>
+
+                function setTable(data) {
+                    $("#rawDataTable tbody").empty();
+                    var columns = getColumns();
+                    for (var i = 0; i < data.length; i++){
+                        var row = $('<tr/>');
+                        for(var colIndex = 0; colIndex < columns.length; colIndex++){
+                            var val = data[i][columns[colIndex]];
+                            // If there is any key, which is matching
+                            // with the column name
+                            if (val == null) {
+                                val = "";  
+                            } 
+                            row.append($('<td/>').html(val));
+                        }
+                        // Adding each row to the table
+                        $("#rawDataTable").append(row);
+                    }
+                }
+
+                function filterData(data){
+                    //get filter values
+                    var startDate = $("#startDate").val();
+                    var endDate = $("#endDate").val()
+                    var version = $("#model-version").val()
+                    var margin = $("#margin").is(":checked")
+                    var total = $("#total").is(":checked")
+                    var home = $("#home").is(":checked")
+                    var away = $("#away").is(":checked")
+                    var win = $("#win").is(":checked")
+                    var threshold = $("input[name=threshold]:checked").val()
+                    var filteredData = data;
+                    //filter Dates and version
+                    if (startDate){
+                        filteredData = filteredData.filter(function(value, i ){
+                            if ((new Date(startDate) <= new Date(value["Date"])) ){
+                                return true;
+                            } 
+                            else {
+                                return false;
+                            }
+                        });
+                    }
+                    if(endDate) {
+                        filteredData = filteredData.filter(function(value, i ){
+                            if ((new Date(endDate) >= new Date(value["Date"])) ) {
+                                    return true;
+                            } else {
+                                return false;
+                            }
+                        });
+                    }
+                    if(version){
+                        filteredData = filteredData.filter(function(value, i){
+                            if (value["Model Version"] == version){
+                                return true;
+                            }
+                            else{
+                                return false;
+                            }
+                        });
+                    }
+                    // Filter Bet Type
+                    if(margin || total || home || away || win){
+                        for(var i = 0; i < filteredData.length; i++){
+                            var tempValues = {};
+                            for (let [column, val] of Object.entries(filteredData[i])) {
+                                if(["Date", "Name", "Home Team", "Away Team", "Model Version"].includes(column)){
+                                    tempValues[column] = val;
+                                }
+                                if (margin && ["Game Margin","Vegas Odds","Team Bet On","BET SPREAD","Threshold_SPREAD"].includes(column)){
+                                    tempValues[column] = val;
+                                }
+                                if(total && ["Total Points","Vegas Over/Under", "Total Bet On", "BET TOTAL", "Threshold_TOTAL"].includes(column)){
+                                    tempValues[column] = val;
+                                }
+                                if(home && ["Home Score", "Vegas Home", "Home Score Bet on", "BET HOME", "THRESHOLD_HOME"].includes(column)){
+                                    tempValues[column] = val;
+                                }
+                                if(away && ["Away Score", "Vegas Away", "Away Score Bet On", "BET AWAY", "Threshold_AWAY"].includes(column)){
+                                    tempValues[column] = val;
+                                }
+                                if(win && ["Winner", "Vegas MoneyLine Odds", "ML bet on", "BET WIN", "Threshold_ML"].includes(column)){
+                                    tempValues[column] = val;
+                                }
+                            }
+                            filteredData[i] = tempValues;
+                        }
+                    }
+                    //filter Thresholds
+                    if (threshold){
+                        filteredData = filteredData.filter(function(value, i){
+                            if (value["THRESHOLD_HOME"] == threshold 
+                            || value["Threshold_AWAY"] == threshold 
+                            || value["Threshold_ML"] == threshold 
+                            || value["Threshold_SPREAD"] == threshold 
+                            || value["Threshold_TOTAL"] == threshold ){
+                                return true;
+                            }
+                            else{
+                                return false;
+                            }
+                        });
+                        for(var i = 0; i < filteredData.length; i++){
+                            var tempValues = {};
+                            tempValues["Date"] = filteredData[i]["Date"];
+                            tempValues["Name"] = filteredData[i]["Name"];
+                            tempValues["Home Team"] = filteredData[i]["Home Team"];
+                            tempValues["Away Team"] = filteredData[i]["Away Team"];
+                            tempValues["Model Version"] = filteredData[i]["Model Version"];
+                            if(filteredData[i]["THRESHOLD_HOME"] != undefined && filteredData[i]["THRESHOLD_HOME"] == threshold){
+                                cols = ["Home Score", "Vegas Home", "Home Score Bet on", "BET HOME", "THRESHOLD_HOME"];
+                                cols.forEach(function(col, j){
+                                    tempValues[col] = filteredData[i][col];
+                                });
+                            }
+                            if (filteredData[i]["Threshold_AWAY"] != undefined && filteredData[i]["Threshold_AWAY"] == threshold){
+                                cols = ["Away Score", "Vegas Away", "Away Score Bet On", "BET AWAY", "Threshold_AWAY"];
+                                cols.forEach(function(col, j){
+                                    tempValues[col] = filteredData[i][col];
+                                });
+                            }
+                            if (filteredData[i]["Threshold_ML"] != undefined && filteredData[i]["Threshold_ML"] == threshold){
+                                cols = ["Winner", "Vegas MoneyLine Odds", "ML bet on", "BET WIN", "Threshold_ML"];
+                                cols.forEach(function(col, j){
+                                    tempValues[col] = filteredData[i][col];
+                                });
+                            }
+                            if (filteredData[i]["Threshold_SPREAD"] != undefined && filteredData[i]["Threshold_SPREAD"] == threshold){
+                                cols = ["Game Margin","Vegas Odds","Team Bet On","BET SPREAD","Threshold_SPREAD"];
+                                cols.forEach(function(col, j){
+                                    tempValues[col] = filteredData[i][col];
+                                });
+                            }
+                            if (filteredData[i]["Threshold_TOTAL"] != undefined && filteredData[i]["Threshold_TOTAL"] == threshold){
+                                cols = ["Total Points","Vegas Over/Under", "Total Bet On", "BET TOTAL", "Threshold_TOTAL"];
+                                cols.forEach(function(col, j){
+                                    tempValues[col] = filteredData[i][col];
+                                });
+                            }
+                            filteredData[i] = tempValues;
+                    }
+                }
+
+                    return filteredData;
+                }
+
+                function getColumns(){
+                    return [    
+                        "Date",
+                        "Home Team",
+                        "Away Team",
+                        "Name",
+                        "Home Score",
+                        "Vegas Home",
+                        "Home Score Bet on",
+                        "BET HOME",
+                        "THRESHOLD_HOME",
+                        "Away Score",
+                        "Vegas Away",
+                        "Away Score Bet On",
+                        "BET AWAY",
+                        "Threshold_AWAY",
+                        "Winner",
+                        "Vegas MoneyLine Odds",
+                        "ML bet on",
+                        "BET WIN",
+                        "Threshold_ML",
+                        "Game Margin",
+                        "Vegas Odds",
+                        "Team Bet On",
+                        "BET SPREAD",
+                        "Threshold_SPREAD",
+                        "Total Points",
+                        "Vegas Over/Under",
+                        "Total Bet On",
+                        "BET TOTAL",
+                        "Threshold_TOTAL",
+                        "Model Version",
+                    ]
+                }
+                function getNumWinsLosses(data, type){
+                    var count = 0;
+                    data.forEach(function(game, i){ 
+                        for (let [column, value] of Object.entries(game)) { 
+                            if(column.includes("BET") && value == type) { 
+                                count++; 
+                            } 
+                        } 
+                    });
+                    return count;
+                }
+                function setChart(data){
+                    var numWins = getNumWinsLosses(data, "W");
+                    var numLosses = getNumWinsLosses(data, "L");
+                    var chart = new CanvasJS.Chart("chartContainer",
+                        {
+                            backgroundColor: "#261c3e", 
+                            theme: "dark2",
+                            title:{
+                                text: "Winning Percentage"
+                            },		
+                            data: [
+                            {       
+                                type: "pie",
+                                showInLegend: true,
+                                toolTipContent: "{y} - #percent %",
+                                yValueFormatString: "#,###,###",
+                                legendText: "{indexLabel}",
+                                dataPoints: [
+                                    {  y: numWins, indexLabel: "Wins", color: "green" },
+                                    {  y: numLosses, indexLabel: "Losses", color: "red" }
+                                ]
+                            }
+                            ]
+                        });
+                    chart.render();
+
+                }
+
+            </script>
+            <script>
+                $(window).on('load', function()
+                {
+                  window.nbaData = getData();
+                  console.log(window.nbaData);
+                  var data = filterData(window.nbaData);
+                  setTable(data);
+                  setChart(data);
+
+                    $('.loader').hide();
+                });
+              </script>
 
 	</body>
 </html>

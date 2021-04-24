@@ -2626,6 +2626,11 @@ input, select, textarea {
 			.image.main img {
 				width: 100%;
 			}
+        @media (max-width:629px) {
+            .hide-onPhone {
+                display: none !important;
+            }
+            }
 
 /* List */
 

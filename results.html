@@ -51,56 +51,57 @@
         }
 
         .overlay {
+            height: 100%;
+            width: 0;
             position: fixed;
+            z-index: 1;
             top: 0;
-            bottom: 0;
             left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            transition: opacity 500ms;
-            visibility: hidden;
-            opacity: 0;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow-x: hidden;
+            transition: 0.5s;
         }
 
-        .overlay:target {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .popup {
-            margin: 70px auto;
-            padding: 20px;
-            background: #261c3e;
-            border-radius: 5px;
-            /*width: 30%;*/
+        .overlay-content {
             position: relative;
-            transition: all 5s ease-in-out;
+            top: 0%;
+            width: 100%;
+            text-align: center;
+            margin-top: 0px;
         }
 
-        .popup h2 {
-            margin-top: 0;
-            color: #333;
-            font-family: Tahoma, Arial, sans-serif;
+        .overlay a {
+            padding: 8px;
+            text-decoration: none;
+            font-size: 36px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
         }
 
-        .popup .close {
+        .overlay a:hover,
+        .overlay a:focus {
+            color: #f1f1f1;
+        }
+
+        .overlay .closebtn {
             position: absolute;
             top: 20px;
-            right: 30px;
-            transition: all 200ms;
-            font-size: 30px;
-            font-weight: bold;
-            text-decoration: none;
-            color: rgb(255, 254, 254);
+            right: 45px;
+            font-size: 60px;
         }
 
-        .popup .close:hover {
-            color: #06D85F;
-        }
+        @media screen and (max-height: 450px) {
+            .overlay a {
+                font-size: 20px
+            }
 
-        .popup .content {
-            /*max-height: 30%;*/
-            overflow: auto;
+            .overlay .closebtn {
+                font-size: 40px;
+                top: 15px;
+                right: 35px;
+            }
         }
 
         @media screen and (max-width: 700px) {
@@ -221,7 +222,7 @@
                         <div id="chartContainer" style="height: 300px; width: 100%;"></div>
                         <br>
                         <div class="col-6 col-12-xsmall">
-                            <a id="expandWinningPercentage" href="#winningPercentagePopup" class="button fit">Expand</a>
+                            <a id="expandWinningPercentage" class="button fit">Expand</a>
                         </div>
                     </section>
                     <section>
@@ -304,12 +305,12 @@
         </div>
     </div>
     <div id="winningPercentagePopup" class="overlay">
-        <div class="popup">
+        <div class="overlay-content">
             <div style="text-align: end;">
-                <a class="close" style="position: inherit !important;" href="#">&times;</a>
+                <a class="closebtn" style="position: inherit !important;" href="#">&times;</a>
             </div>
             <div class="inner">
-                <div class="features" style="height: 1000px;overflow:auto;">
+                <div class="features">
                     <section>
                         <div style="height: 300px; width: 100%;" id="chartContainerMain"></div>
                     </section>
@@ -364,14 +365,15 @@
             });
 
             $("#expandWinningPercentage").click(function (e) {
+                document.getElementById("winningPercentagePopup").style.width = "100%";   
                 window.nbaData = getData();
                 const data = filterData(window.nbaData);
                 //setTable(data);
-                setChart(data, "chartContainerMain", true, "Total Winning Percentage");
+                setChart(data, "chartContainerMain", true, "Overall Winning Percentage");
 
                 var tempData = filterBetType(filterData(getData()), "margin");
                 setChart(tempData, "chartContainerMargin", true, "Spread Bet Percentage");
-                
+
                 tempData = filterBetType(filterData(getData()), "total");
                 setChart(tempData, "chartContainerTotal", true, "Over/Under Bet Percentage");
 
@@ -383,9 +385,13 @@
 
                 tempData = filterBetType(filterData(getData()), "win");
                 setChart(tempData, "chartContainerWinner", true, "Moneyline Bet Percentage");
+
+                             
             });
 
-
+            $(".closebtn").click(function (e) {
+                document.getElementById("winningPercentagePopup").style.width = "0%"; 
+            })
         });
 
         function setTable(data) {
@@ -450,7 +456,7 @@
                 });
             }
             // Filter Bet Type
-            if (margin || total || home || away || win){
+            if (margin || total || home || away || win) {
                 var betTypes = [];
                 if (margin) betTypes.push("margin");
                 if (total) betTypes.push("total");
@@ -459,7 +465,7 @@
                 if (win) betTypes.push("win");
                 filteredData = filterBetType(filteredData, betTypes);
             }
-        
+
             //filter Thresholds
             if (threshold) {
                 filteredData = filteredData.filter(function (value, i) {
@@ -518,33 +524,33 @@
             return filteredData;
         }
 
-        function filterBetType(data, type){
+        function filterBetType(data, type) {
             var tempData = data;
             for (var i = 0; i < tempData.length; i++) {
-                    var tempValues = {};
-                    for (let [column, val] of Object.entries(tempData[i])) {
-                        if (["Date", "Name", "Home Team", "Away Team", "Model Version"].includes(column)) {
-                            tempValues[column] = val;
-                        }
-                        if (type.includes("margin") && ["Game Margin", "Vegas Odds", "Team Bet On", "BET SPREAD", "Threshold_SPREAD"].includes(column)) {
-                            tempValues[column] = val;
-                        }
-                        if (type.includes("total") && ["Total Points", "Vegas Over/Under", "Total Bet On", "BET TOTAL", "Threshold_TOTAL"].includes(column)) {
-                            tempValues[column] = val;
-                        }
-                        if (type.includes("home") && ["Home Score", "Vegas Home", "Home Score Bet on", "BET HOME", "THRESHOLD_HOME"].includes(column)) {
-                            tempValues[column] = val;
-                        }
-                        if (type.includes("away") && ["Away Score", "Vegas Away", "Away Score Bet On", "BET AWAY", "Threshold_AWAY"].includes(column)) {
-                            tempValues[column] = val;
-                        }
-                        if (type.includes("win") && ["Winner", "Vegas MoneyLine Odds", "ML bet on", "BET WIN", "Threshold_ML"].includes(column)) {
-                            tempValues[column] = val;
-                        }
+                var tempValues = {};
+                for (let [column, val] of Object.entries(tempData[i])) {
+                    if (["Date", "Name", "Home Team", "Away Team", "Model Version"].includes(column)) {
+                        tempValues[column] = val;
                     }
-                    tempData[i] = tempValues;
+                    if (type.includes("margin") && ["Game Margin", "Vegas Odds", "Team Bet On", "BET SPREAD", "Threshold_SPREAD"].includes(column)) {
+                        tempValues[column] = val;
+                    }
+                    if (type.includes("total") && ["Total Points", "Vegas Over/Under", "Total Bet On", "BET TOTAL", "Threshold_TOTAL"].includes(column)) {
+                        tempValues[column] = val;
+                    }
+                    if (type.includes("home") && ["Home Score", "Vegas Home", "Home Score Bet on", "BET HOME", "THRESHOLD_HOME"].includes(column)) {
+                        tempValues[column] = val;
+                    }
+                    if (type.includes("away") && ["Away Score", "Vegas Away", "Away Score Bet On", "BET AWAY", "Threshold_AWAY"].includes(column)) {
+                        tempValues[column] = val;
+                    }
+                    if (type.includes("win") && ["Winner", "Vegas MoneyLine Odds", "ML bet on", "BET WIN", "Threshold_ML"].includes(column)) {
+                        tempValues[column] = val;
+                    }
                 }
-                return tempData;
+                tempData[i] = tempValues;
+            }
+            return tempData;
         }
 
         function getColumns() {
@@ -593,9 +599,10 @@
             return count;
         }
         function setChart(data, chartID, showInLegend, title) {
+            $("#" + chartID).empty();
             var numWins = getNumWinsLosses(data, "W");
             var numLosses = getNumWinsLosses(data, "L");
-            if (numWins > 0 || numLosses > 0){
+            if (numWins > 0 || numLosses > 0) {
                 var chart = new CanvasJS.Chart(chartID,
                     {
                         backgroundColor: "#261c3e",
@@ -615,9 +622,14 @@
                                     { y: numLosses, indexLabel: "Losses: #percent %", color: "red" }
                                 ]
                             }
-                        ]
+                        ],
+                        options: {
+                            responsive: true
+                        }
                     });
                 chart.render();
+            } else {
+                $("#"+chartID).append("<p>No " + title + " Data due to Filters</p>");
             }
         }
 

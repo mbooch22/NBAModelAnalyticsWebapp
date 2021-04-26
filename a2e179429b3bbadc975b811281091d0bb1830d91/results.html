@@ -60,7 +60,7 @@
             background-color: rgb(0, 0, 0);
             background-color: rgba(0, 0, 0, 0.9);
             overflow-x: hidden;
-            transition: 0.5s;
+            /*transition: 0.5s;*/
         }
 
         .overlay-content {
@@ -77,7 +77,7 @@
             font-size: 36px;
             color: #818181;
             display: block;
-            transition: 0.3s;
+            /*transition: 0.3s;*/
         }
 
         .overlay a:hover,
@@ -304,7 +304,7 @@
             </div>
         </div>
     </div>
-    <div id="winningPercentagePopup" class="overlay">
+    <div id="winningPercentagePopup" style="width: 100%; display: none;" class="overlay">
         <div class="overlay-content">
             <div style="text-align: end;">
                 <a class="closebtn" style="position: inherit !important;" href="#">&times;</a>
@@ -343,6 +343,7 @@
     <script src="assets/js/main.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src='assets/js/jquery-ui.min.js'></script>
     <script type="text/javascript">
         $(document).ready(function () {
 
@@ -365,7 +366,8 @@
             });
 
             $("#expandWinningPercentage").click(function (e) {
-                document.getElementById("winningPercentagePopup").style.width = "100%";   
+                //document.getElementById("winningPercentagePopup").style.width = "100%";   
+                $("#winningPercentagePopup").slideDown(1000);
                 window.nbaData = getData();
                 const data = filterData(window.nbaData);
                 //setTable(data);
@@ -386,11 +388,12 @@
                 tempData = filterBetType(filterData(getData()), "win");
                 setChart(tempData, "chartContainerWinner", true, "Moneyline Bet Percentage");
 
-                             
+
             });
 
             $(".closebtn").click(function (e) {
-                document.getElementById("winningPercentagePopup").style.width = "0%"; 
+                //document.getElementById("winningPercentagePopup").style.width = "0%"; 
+                $("#winningPercentagePopup").slideUp("fast");
             })
         });
 
@@ -629,7 +632,7 @@
                     });
                 chart.render();
             } else {
-                $("#"+chartID).append("<p>No " + title + " Data due to Filters</p>");
+                $("#" + chartID).append("<p>No " + title + " Data due to Filters</p>");
             }
         }
 

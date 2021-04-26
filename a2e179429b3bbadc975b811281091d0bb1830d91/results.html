@@ -113,6 +113,60 @@
                 width: 70%;
             }
         }
+
+
+        .popupOverlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            transition: opacity 500ms;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .popupOverlay:target {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .popup {
+            margin: 70px auto;
+            padding: 20px;
+            background: #261c3e;
+            border-radius: 5px;
+            /*width: 30%;*/
+            position: relative;
+            transition: all 5s ease-in-out;
+        }
+
+        .popup h2 {
+            margin-top: 0;
+            color: #333;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+
+        .popup .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            transition: all 200ms;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: rgb(255, 254, 254);
+        }
+
+        .popup .close:hover {
+            color: #06D85F;
+        }
+
+        .popup .content {
+            /*max-height: 30%;*/
+            overflow: auto;
+        }
     </style>
 
     <title>Results</title>
@@ -212,9 +266,19 @@
             <div class="inner">
                 <div class="features">
                     <section>
-
                         <span class="icon solid major fa-chart-bar"></span>
                         <h3>Game Drop down in depth</h3>
+                        <div class="table-wrapper">
+                            <table id="betDropDownTable">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
                     </section>
                     <section>
                         <span class="icon solid major fa-chart-pie"></span>
@@ -234,7 +298,7 @@
                         <span class="icon solid major fa-table"></span>
                         <h3>Raw Data</h3>
                         <div class="col-6 col-12-xsmall">
-                            <a id="showRawDataButton" href="#popup1" class="button fit">Show Raw Data</a>
+                            <a id="showRawDataButton" class="button fit">Show Raw Data</a>
                         </div>
                     </section>
                 </div>
@@ -252,11 +316,13 @@
         </div>
     </footer>
     <!-- Popups -->
-    <div id="popup1" class="overlay">
-        <div class="popup">
-            <h2>Raw Data Table </h2>
-            <a class="close" href="#">&times;</a>
-            <div class="table-wrapper" style="height: 1000px;overflow:auto;">
+    <div id="rawDataPopup" class="overlay" style="width: 100%; display: none;">
+        <div class="overlay-content">
+            <h2>Raw Data Table</h2>
+            <div style="text-align: end;">
+                <a class="closebtn" style="position: inherit !important;" href="#">&times;</a>
+            </div>
+            <div class="table-wrapper">
                 <table id="rawDataTable" class="alt">
                     <thead>
                         <tr>
@@ -343,7 +409,7 @@
     <script src="assets/js/main.js"></script>
     <script type="text/javascript" src="data.js"></script>
     <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-    <script src='assets/js/jquery-ui.min.js'></script>
+
     <script type="text/javascript">
         $(document).ready(function () {
 
@@ -394,8 +460,167 @@
             $(".closebtn").click(function (e) {
                 //document.getElementById("winningPercentagePopup").style.width = "0%"; 
                 $("#winningPercentagePopup").slideUp("fast");
-            })
+                $("#rawDataPopup").slideUp("fast");
+            });
+
+            $("#showRawDataButton").click(function (e) {
+                $("#rawDataPopup").slideDown(1000);
+            });
+
+            setDropDownTable(filterData(getData()), false);
         });
+
+        function setDropDownTable(data, expanded) {
+            $("#betDropDownTable tbody").empty();
+            var uniqueDates = $.unique(data.map(function (d) { return d.Date.substring(0, 10); }));
+            uniqueDates.sort((a, b) => new Date(b) - new Date(a));
+            //set Dates
+            if (expanded){
+                uniqueDates.forEach(function(date, i){
+                    var row = $('<tr/>');
+                    if(new Date(date).toLocaleDateString("en-US")) {
+                        row.append($('<td/>').html(new Date(date).toLocaleDateString("en-US")));
+                        $("#betDropDownTable").append(row);    
+                    }
+                });
+            } else {
+                var row = $('<tr id="' + uniqueDates[0] + '"/>');
+                var button = $('<a id="' + uniqueDates[0] + '" onclick="toggleDateDropDown(this.id)"" class="fa fa-chevron-down"></a>');
+                row.append(button);
+                row.append($('<td/>').html(new Date(uniqueDates[0]).toLocaleDateString("en-US"))); 
+                $("#betDropDownTable").append(row);  
+            }
+
+
+        }
+
+        function toggleDateDropDown(id){
+            if ($("#"+id + " a").first().attr('class') === "fa fa-chevron-up"){
+                //hide
+                $("#"+id + " a").first().removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                $("#"+id + " td").first().children().hide();
+            } else{
+                $("#"+id + " a").first().removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                if ($("#"+id + " td").first().data()[0]){
+                    $("#"+id + " td").first().children().show()
+                } else {
+                    var label = $(' <tr> <th>Game</th></tr>')
+                    $("#"+id + " td").first().append(label);
+                    var data = filterData(getData());
+                    var games = data.filter(game => game.Date.substring(0, 10) == id);
+                    $("#"+id + " td").first().data(games);
+                    games.forEach(function(game, i){
+                        var row = $('<tr id="' + game.Name.replaceAll(" ", "").replace("@", "at") + '" />');
+                        var button = $('<a id="' + game.Name.replaceAll(" ", "").replace("@", "at") + '" onclick="toggleGameDropDown(this.id)"" class="fa fa-chevron-down"></a>');
+                        row.append(button);
+                        row.append($('<td/>').html(game.Name));
+                        $("#"+id + " td").first().append(row);
+                    });
+                }
+            }
+        }
+
+        function toggleGameDropDown(id) {
+            if ($("#"+id + " a").first().attr('class') === "fa fa-chevron-up"){
+                //hide
+                $("#"+id + " a").first().removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                $("#"+id + " td").first().children().hide();
+            } else{
+                $("#"+id + " a").first().removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                if ($("#"+id + " td").first().children().length > 0 ){
+                    $("#"+id + " td").first().children().show()
+                } else {
+                    var label = $(' <tr> <th>Bets</th></tr>')
+                    $("#"+id + " td").first().append(label);
+                    var bets = ["Home O/U", "Away O/U", "Moneyline", "Spread", "Total O/U"];
+                    for(var i = 0; i < bets.length; i++){
+                        var row = $('<tr id="' + id+bets[i].replaceAll(" ", "").replace("/", "") + '" />');
+                        var button = $('<a id="' + id+bets[i].replaceAll(" ", "").replace("/", "") + '" onclick="toggleBetTypeDropDown(this.id)"" class="fa fa-chevron-down"></a>');
+                        row.append(button);
+                        row.append($('<td/>').html(bets[i]));
+                        $("#"+id + " td").first().append(row);
+                    }
+                }
+            }
+        }
+
+        function toggleBetTypeDropDown(id) {
+            if ($("#"+id + " a").first().attr('class') === "fa fa-chevron-up"){
+                //hide
+                $("#"+id + " a").first().removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                $("#"+id + " td").first().children().hide();
+            } else{
+                $("#"+id + " a").first().removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                if ($("#"+id + " td").first().children().length > 0 ){
+                    $("#"+id + " td").first().children().show()
+                } else {
+                    var data = $("#"+id + " td").parent().parent().parent().parent().data();
+                    var dataSize = Object.keys(data).length;
+                    for(var i = 0; i < dataSize; i++){
+                            var tempID = $("#"+id + " td").parent().parent().parent().attr('id');
+                            if(data[i].Name.replaceAll(" ", "").replace("@", "at") == tempID){
+                                var currData = data[i];
+                            }
+                        }
+                    if(id.includes('HomeOU')){
+                        var label = $(' <tr> <th>Home Team</th> <th>Home Score</th> <th>Home Vegas Over Under</th> <th>Home Score Bet on</th> <th>Win/Loss</th> </tr>')
+                        $("#"+id + " td").first().append(label);
+                        var row = $('<tr/>');
+                        row.append($('<td/>').html(currData["Home Team"]));
+                        row.append($('<td/>').html(currData["Home Score"]));
+                        row.append($('<td/>').html(currData["Vegas Home"]));
+                        row.append($('<td/>').html(currData["Home Score Bet on"]));
+                        row.append($('<td/>').html(currData["BET HOME"]));
+                        $("#"+id + " td").first().append(row);
+                    } else if(id.includes('AwayOU')) {
+                        var label = $(' <tr> <th>Away Team</th> <th>Away Score</th> <th>Away Vegas Over Under</th> <th>Away Score Bet on</th> <th>Win/Loss</th> </tr>')
+                        $("#"+id + " td").first().append(label);
+                        var row = $('<tr/>');
+                        row.append($('<td/>').html(currData["Away Team"]));
+                        row.append($('<td/>').html(currData["Away Score"]));
+                        row.append($('<td/>').html(currData["Vegas Away"]));
+                        row.append($('<td/>').html(currData["Away Score Bet On"]));
+                        row.append($('<td/>').html(currData["BET AWAY"]));
+                        $("#"+id + " td").first().append(row);
+                    } else if(id.includes('Moneyline')) {
+                        var label = $(' <tr> <th>Home Team</th> <th>Vegas MoneyLine Odds</th> <th>Odds Bet On</th> <th>Winner</th> <th>Win/Loss</th> </tr>')
+                        $("#"+id + " td").first().append(label);
+                        var row = $('<tr/>');
+                        row.append($('<td/>').html(currData["Home Team"]));
+                        row.append($('<td/>').html(currData["Vegas MoneyLine Odds"]));
+                        row.append($('<td/>').html(currData["ML bet on "]));
+                        if (currData["Winner"] == "H"){
+                            row.append($('<td/>').html(currData["Home Team"]));
+                        } else {
+                            row.append($('<td/>').html(currData["Away Team"]));
+                        }
+                        row.append($('<td/>').html(currData["BET WIN"]));
+                        $("#"+id + " td").first().append(row);
+                    } else if(id.includes('Spread')) {
+                        var label = $(' <tr> <th>Home Team</th> <th>Vegas Odds</th> <th>Spread Bet On</th> <th>Final Game Margin</th> <th>Win/Loss</th> </tr>')
+                        $("#"+id + " td").first().append(label);
+                        var row = $('<tr/>');
+                        row.append($('<td/>').html(currData["Home Team"]));
+                        row.append($('<td/>').html(currData["Vegas Odds"]));
+                        row.append($('<td/>').html(currData["Team Bet On"]));
+                        row.append($('<td/>').html(currData["Game Margin"]));
+                        row.append($('<td/>').html(currData["BET SPREAD"]));
+                        $("#"+id + " td").first().append(row);
+                    } else if(id.includes('TotalOU')) {
+                        var label = $(' <tr> <th>Vegas Total Over Under</th> <th>Game Total Points</th> <th>Total Bet On</th> <th>Win/Loss</th> </tr>')
+                        $("#"+id + " td").first().append(label);
+                        var row = $('<tr/>');
+                        row.append($('<td/>').html(currData["Vegas Over/Under"]));
+                        row.append($('<td/>').html(currData["Total Points"]));
+                        row.append($('<td/>').html(currData["Total Bet On"]));
+                        row.append($('<td/>').html(currData["BET TOTAL"]));
+                        $("#"+id + " td").first().append(row);
+                    }
+                    
+                }
+            }
+        }
+        
 
         function setTable(data) {
             $("#rawDataTable tbody").empty();

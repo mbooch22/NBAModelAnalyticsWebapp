@@ -267,9 +267,9 @@
                 <div class="features">
                     <section>
                         <span class="icon solid major fa-chart-bar"></span>
-                        <h3>Game Drop down in depth</h3>
+                        <h3>Game Bets By Date (latest)</h3>
                         <div class="table-wrapper">
-                            <table id="betDropDownTable">
+                            <table id="betDropDownTable" class="alt">
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -279,6 +279,10 @@
                                 <tbody>
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="col-6 col-12-xsmall">
+                            <a id="expandGameDropDowns" class="button fit">See All Dates</a>
+                        </div>
                     </section>
                     <section>
                         <span class="icon solid major fa-chart-pie"></span>
@@ -286,7 +290,7 @@
                         <div id="chartContainer" style="height: 300px; width: 100%;"></div>
                         <br>
                         <div class="col-6 col-12-xsmall">
-                            <a id="expandWinningPercentage" class="button fit">Expand</a>
+                            <a id="expandWinningPercentage" class="button fit">More</a>
                         </div>
                     </section>
                     <section>
@@ -399,6 +403,26 @@
             </div>
         </div>
     </div>
+    <div id="betByDatePopover" class="overlay" style="width: 100%; display: none;">
+        <div class="overlay-content">
+            <h2>Bet Results by Date</h2>
+            <div style="text-align: end;">
+                <a class="closebtn" style="position: inherit !important;" href="#">&times;</a>
+            </div>
+            <div class="table-wrapper">
+                <table id="betDropDownPopoverTable" class="alt">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     <!-- Scripts -->
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/js/jquery.scrollex.min.js"></script>
@@ -457,45 +481,56 @@
 
             });
 
+            $("#expandGameDropDowns").click(function(e){
+                $("#betDropDownTable tbody").empty();
+                $("#betByDatePopover").slideDown(1000);
+                setDropDownTable("betDropDownPopoverTable", filterData(getData()), true);
+            });
+
             $(".closebtn").click(function (e) {
                 //document.getElementById("winningPercentagePopup").style.width = "0%"; 
                 $("#winningPercentagePopup").slideUp("fast");
                 $("#rawDataPopup").slideUp("fast");
+                $("#betByDatePopover").slideUp("fast");
+                $("#betByDatePopover tbody").empty();
+                setDropDownTable("betDropDownTable", filterData(getData()), false);
             });
 
             $("#showRawDataButton").click(function (e) {
                 $("#rawDataPopup").slideDown(1000);
             });
 
-            setDropDownTable(filterData(getData()), false);
+            setDropDownTable("betDropDownTable", filterData(getData()), false);
         });
 
-        function setDropDownTable(data, expanded) {
-            $("#betDropDownTable tbody").empty();
+        function setDropDownTable(id, data, expanded) {
+            $("#"+id+ " tbody").empty();
             var uniqueDates = $.unique(data.map(function (d) { return d.Date.substring(0, 10); }));
             uniqueDates.sort((a, b) => new Date(b) - new Date(a));
             //set Dates
             if (expanded){
                 uniqueDates.forEach(function(date, i){
-                    var row = $('<tr/>');
+                    var row = $('<tr id="' + date + '"/>');
+                    var button = $('<a id="' + date + '" onclick="toggleDateDropDown(this.id)"" class="button fa fa-chevron-down"></a>');
+                    row.append(button);
                     if(new Date(date).toLocaleDateString("en-US")) {
                         row.append($('<td/>').html(new Date(date).toLocaleDateString("en-US")));
-                        $("#betDropDownTable").append(row);    
+                        $("#"+id).append(row);    
                     }
                 });
             } else {
                 var row = $('<tr id="' + uniqueDates[0] + '"/>');
-                var button = $('<a id="' + uniqueDates[0] + '" onclick="toggleDateDropDown(this.id)"" class="fa fa-chevron-down"></a>');
+                var button = $('<a id="' + uniqueDates[0] + '" onclick="toggleDateDropDown(this.id)"" class="button fa fa-chevron-down"></a>');
                 row.append(button);
                 row.append($('<td/>').html(new Date(uniqueDates[0]).toLocaleDateString("en-US"))); 
-                $("#betDropDownTable").append(row);  
+                $("#"+id).append(row);  
             }
 
 
         }
 
         function toggleDateDropDown(id){
-            if ($("#"+id + " a").first().attr('class') === "fa fa-chevron-up"){
+            if ($("#"+id + " a").first().attr('class') === "button fa fa-chevron-up"){
                 //hide
                 $("#"+id + " a").first().removeClass('fa-chevron-up').addClass('fa-chevron-down');
                 $("#"+id + " td").first().children().hide();
@@ -511,7 +546,7 @@
                     $("#"+id + " td").first().data(games);
                     games.forEach(function(game, i){
                         var row = $('<tr id="' + game.Name.replaceAll(" ", "").replace("@", "at") + '" />');
-                        var button = $('<a id="' + game.Name.replaceAll(" ", "").replace("@", "at") + '" onclick="toggleGameDropDown(this.id)"" class="fa fa-chevron-down"></a>');
+                        var button = $('<a id="' + game.Name.replaceAll(" ", "").replace("@", "at") + '" onclick="toggleGameDropDown(this.id)"" class="button fa fa-chevron-down"></a>');
                         row.append(button);
                         row.append($('<td/>').html(game.Name));
                         $("#"+id + " td").first().append(row);
@@ -521,7 +556,7 @@
         }
 
         function toggleGameDropDown(id) {
-            if ($("#"+id + " a").first().attr('class') === "fa fa-chevron-up"){
+            if ($("#"+id + " a").first().attr('class') === "button fa fa-chevron-up"){
                 //hide
                 $("#"+id + " a").first().removeClass('fa-chevron-up').addClass('fa-chevron-down');
                 $("#"+id + " td").first().children().hide();
@@ -535,7 +570,7 @@
                     var bets = ["Home O/U", "Away O/U", "Moneyline", "Spread", "Total O/U"];
                     for(var i = 0; i < bets.length; i++){
                         var row = $('<tr id="' + id+bets[i].replaceAll(" ", "").replace("/", "") + '" />');
-                        var button = $('<a id="' + id+bets[i].replaceAll(" ", "").replace("/", "") + '" onclick="toggleBetTypeDropDown(this.id)"" class="fa fa-chevron-down"></a>');
+                        var button = $('<a id="' + id+bets[i].replaceAll(" ", "").replace("/", "") + '" onclick="toggleBetTypeDropDown(this.id)"" class="button fa fa-chevron-down"></a>');
                         row.append(button);
                         row.append($('<td/>').html(bets[i]));
                         $("#"+id + " td").first().append(row);
@@ -545,7 +580,7 @@
         }
 
         function toggleBetTypeDropDown(id) {
-            if ($("#"+id + " a").first().attr('class') === "fa fa-chevron-up"){
+            if ($("#"+id + " a").first().attr('class') === "button fa fa-chevron-up"){
                 //hide
                 $("#"+id + " a").first().removeClass('fa-chevron-up').addClass('fa-chevron-down');
                 $("#"+id + " td").first().children().hide();

@@ -505,6 +505,7 @@
 
         function setDropDownTable(id, data, expanded) {
             $("#"+id+ " tbody").empty();
+            $("#"+id+ " tfooter").empty();
             var uniqueDates = $.unique(data.map(function (d) { return d.Date.substring(0, 10); }));
             uniqueDates.sort((a, b) => new Date(b) - new Date(a));
             //set Dates
@@ -517,6 +518,10 @@
                         row.append($('<td/>').html(new Date(date).toLocaleDateString("en-US")));
                         $("#"+id).append(row);    
                     }
+                    var betsResults = getBetsWon(data, date);                
+                    var footer = $('<tfoot><tr> <td colspan="1"></td> <td>Wins: ' + betsResults[0] + 
+                        ' Losses: ' + betsResults[1]+ '</td> </tr> </tfoot>')
+                    $("#"+id).append(footer);
                 });
             } else {
                 var row = $('<tr id="' + uniqueDates[0] + '"/>');
@@ -524,9 +529,51 @@
                 row.append(button);
                 row.append($('<td/>').html(new Date(uniqueDates[0]).toLocaleDateString("en-US"))); 
                 $("#"+id).append(row);  
+
+                var betsResults = getBetsWon(data, uniqueDates[0]);                
+                var footer = $('<tfoot><tr> <td colspan="1"></td> <td>Wins: ' + betsResults[0] + 
+                    ' Losses: ' + betsResults[1]+ '</td> </tr> </tfoot>')
+                $("#"+id).append(footer);
+
             }
 
 
+        }
+
+
+        function getBetsWon(data, date){
+            var wins = 0;
+            var losses = 0;
+            for(var i = 0; i < data.length; i++){
+                if (data[i]["Date"].substring(0, 10) == date){
+                    if(data[i]["BET SPREAD"] == "W"){
+                        wins++;
+                    } else {
+                        losses++;
+                    }
+                    if(data[i]["BET TOTAL"] == "W"){
+                        wins++;
+                    } else {
+                        losses++;
+                    }
+                    if(data[i]["BET HOME"] == "W"){
+                        wins++;
+                    } else {
+                        losses++;
+                    }
+                    if(data[i]["BET AWAY"] == "W"){
+                        wins++;
+                    } else {
+                        losses++;
+                    }
+                    if(data[i]["BET WIN"] == "W"){
+                        wins++;
+                    } else {
+                        losses++;
+                    }
+                }
+            }
+            return [wins, losses];
         }
 
         function toggleDateDropDown(id){

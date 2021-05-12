@@ -535,7 +535,7 @@
                 setLineChart(tempData, "lineChartContainerAway", true, "Away Total O/U Bet Profit");
 
                 tempData = filterBetType(filterData(getData()), "win");
-                //setChart(tempData, "lineChartContainerWinner", true, "Moneyline Bet Profit");
+                setLineChart(tempData, "lineChartContainerWinner", true, "Moneyline Bet Profit", false);
 
             });
 
@@ -600,7 +600,42 @@
 
 
         }
+        function getMoneyLineBetsWon(data, date){
+            var wins = 0;
+            var losses = 0;
+            for (var i = 0; i < data.length; i++) {
+                if (data[i]["Date"].substring(0, 10) == date) {
+                    if (data[i]["BET WIN"] == "L"){
+                        losses = losses + 100;
+                        window.testLosses += 100;
+                    } else if (data[i]["BET WIN"] == "W"){
+                        var odds = parseFloat(data[i]["Vegas MoneyLine Odds"].split("%")[0]);
+                        wins = wins + oddsConverter(odds);
+                        window.testAmount += oddsConverter(odds);
+                    }
+                }
+            }
+            return [wins, losses];
+        }
 
+        function oddsConverter(odds){
+            console.log(odds);
+            odds = odds / 100; //get percent
+            if (odds < 50) {
+                //For ‘plus’ moneylines, the formula is: 100 / (Moneyline + 100)
+                var moneyline = (100 / odds) - 100;
+                console.log(parseInt(moneyline));
+                return parseInt(moneyline);
+            } else if (odds > 50 ) {
+                //For ‘minus’ moneylines, the formula is: Moneyline / -(100 – (Moneyline))
+                //  -100*odds / (odds-1)
+                var moneyline = parseInt(-(100*odds) / (odds-1));
+                var moneyWon = 10000/moneyline
+                console.log(parseInt(moneyWon));
+                return parseInt(moneyWon);
+
+            }
+        }
 
         function getBetsWon(data, date, moneyline = true) {
             var wins = 0;
@@ -1012,9 +1047,9 @@
             }
         }
 
-        function setLineChart(data, chartID, showInLegend, title) {
+        function setLineChart(data, chartID, showInLegend, title, moneyline = true) {
             $("#" + chartID).empty();
-            data = getProfit(data);
+            data = getProfit(data, moneyline);
             if (data.length>0){
                 var formatter = new Intl.NumberFormat('en-US', {
                     style: 'currency',
@@ -1053,7 +1088,7 @@
 
         }
 
-        function getProfit(data) {
+        function getProfit(data, moneyline = true) {
             var profitData = [];
             var totalProfit = 0;
             var uniqueDates = $.unique(data.map(function (d) { return d.Date.substring(0, 10); }));
@@ -1061,10 +1096,16 @@
             uniqueDates.forEach(function (date, i) {
                 if (new Date(date).toLocaleDateString("en-US") !== "Invalid Date") {
                     var localDate = new Date(date).toLocaleDateString("en-US");
-                    var betsResults = getBetsWon(data, date, false);
-                    var wins = betsResults[0] * 90.91;
-                    var losses = betsResults[1] * 100;
-                    totalProfit = totalProfit + (wins - losses);
+                    if (moneyline){                        
+                        var betsResults = getBetsWon(data, date, false);
+                        var wins = betsResults[0] * 90.91;
+                        var losses = betsResults[1] * 100;
+                        totalProfit = totalProfit + (wins - losses);
+                    } else {
+                        var betsResults = getMoneyLineBetsWon(data, date);
+                        totalProfit = totalProfit + (betsResults[0] - betsResults[1]);
+                    }
+                    
                     var color = (totalProfit>0) ? "green" : "red";
                     profitData.push({ x: new Date(date), y: totalProfit, color: color });
                 }

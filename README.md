@@ -16,4 +16,6 @@ The predictions of the Model are then used against the corresponding Vegas Odds.
 
 This app will be used to display how the Predictive Model is Performing against the Vegas Odds. (Goal = 60 %)
 
+View App <a href="https://mbooch22.github.io/NBAModelAnalyticsWebapp/"><strong>Here</strong></a>
+
 

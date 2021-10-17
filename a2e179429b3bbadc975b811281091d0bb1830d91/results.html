@@ -189,8 +189,7 @@
                 <li><a href="webscraping.html">Web Scraping</a></li>
                 <li><a href="machineLearning.html">Machine Learning</a></li>
                 <li><a href="objectives.html">Objectives</a></li>
-                <li><a href="objectives.html" class="active">Results</a></li>
-                <li><a href="elements.html">Add Later</a></li>
+                <li><a href="results.html" class="active">Results</a></li>
             </ul>
         </nav>
     </header>
@@ -275,6 +274,15 @@
                         </div>
                     </section>
                     <section>
+                        <span class="icon solid major fa-chart-pie"></span>
+                        <h3>Win Percentage</h3>
+                        <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+                        <br>
+                        <div class="col-6 col-12-xsmall">
+                            <a id="expandWinningPercentage" class="button fit">More</a>
+                        </div>
+                    </section>
+                    <section>
                         <span class="icon solid major fa-chart-bar"></span>
                         <h3>Game Bets By Date (latest)</h3>
                         <div class="table-wrapper">
@@ -291,15 +299,6 @@
                         </div>
                         <div class="col-6 col-12-xsmall">
                             <a id="expandGameDropDowns" class="button fit">See All Dates</a>
-                        </div>
-                    </section>
-                    <section>
-                        <span class="icon solid major fa-chart-pie"></span>
-                        <h3>Win Percentage</h3>
-                        <div id="chartContainer" style="height: 300px; width: 100%;"></div>
-                        <br>
-                        <div class="col-6 col-12-xsmall">
-                            <a id="expandWinningPercentage" class="button fit">More</a>
                         </div>
                     </section>
                     <section>
@@ -516,7 +515,7 @@
 
             });
 
-            $("#expandLineGraph").click(function (e){
+            $("#expandLineGraph").click(function (e) {
                 $("#profitLineChartPopup").slideDown(1000);
                 window.nbaData = getData();
                 const data = filterData(window.nbaData);
@@ -599,42 +598,6 @@
             }
 
 
-        }
-        function getMoneyLineBetsWon(data, date){
-            var wins = 0;
-            var losses = 0;
-            for (var i = 0; i < data.length; i++) {
-                if (data[i]["Date"].substring(0, 10) == date) {
-                    if (data[i]["BET WIN"] == "L"){
-                        losses = losses + 100;
-                        window.testLosses += 100;
-                    } else if (data[i]["BET WIN"] == "W"){
-                        var odds = parseFloat(data[i]["Vegas MoneyLine Odds"].split("%")[0]);
-                        wins = wins + oddsConverter(odds);
-                        window.testAmount += oddsConverter(odds);
-                    }
-                }
-            }
-            return [wins, losses];
-        }
-
-        function oddsConverter(odds){
-            console.log(odds);
-            odds = odds / 100; //get percent
-            if (odds < 50) {
-                //For ‘plus’ moneylines, the formula is: 100 / (Moneyline + 100)
-                var moneyline = (100 / odds) - 100;
-                console.log(parseInt(moneyline));
-                return parseInt(moneyline);
-            } else if (odds > 50 ) {
-                //For ‘minus’ moneylines, the formula is: Moneyline / -(100 – (Moneyline))
-                //  -100*odds / (odds-1)
-                var moneyline = parseInt(-(100*odds) / (odds-1));
-                var moneyWon = 10000/moneyline
-                console.log(parseInt(moneyWon));
-                return parseInt(moneyWon);
-
-            }
         }
 
         function getBetsWon(data, date, moneyline = true) {
@@ -810,10 +773,11 @@
         function setTable(data) {
             $("#rawDataTable tbody").empty();
             var columns = getColumns();
-            for (var i = 0; i < data.length; i++) {
+            var sortedData = data.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+            for (var i = 0; i < sortedData.length; i++) {
                 var row = $('<tr/>');
                 for (var colIndex = 0; colIndex < columns.length; colIndex++) {
-                    var val = data[i][columns[colIndex]];
+                    var val = sortedData[i][columns[colIndex]];
                     // If there is any key, which is matching
                     // with the column name
                     if (val == null) {
@@ -1050,11 +1014,11 @@
         function setLineChart(data, chartID, showInLegend, title, moneyline = true) {
             $("#" + chartID).empty();
             data = getProfit(data, moneyline);
-            if (data.length>0){
+            if (data.length > 0) {
                 var formatter = new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
-    
+
                     // These options are needed to round to whole numbers if that's what you want.
                     //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
                     //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
@@ -1076,7 +1040,7 @@
                         type: "splineArea",
                         indexLabelFontSize: 16,
                         yValueFormatString: "$#,##0",
-                        xValueFormatString: "MMM YYYY",
+                        xValueFormatString: "MMM DD YYYY",
                         color: color,
                         dataPoints: data
                     }]
@@ -1088,30 +1052,127 @@
 
         }
 
-        function getProfit(data, moneyline = true) {
-            var profitData = [];
-            var totalProfit = 0;
-            var uniqueDates = $.unique(data.map(function (d) { return d.Date.substring(0, 10); }));
-            uniqueDates.sort((a, b) => new Date(a) - new Date(b));
-            uniqueDates.forEach(function (date, i) {
-                if (new Date(date).toLocaleDateString("en-US") !== "Invalid Date") {
-                    var localDate = new Date(date).toLocaleDateString("en-US");
-                    if (moneyline){                        
-                        var betsResults = getBetsWon(data, date, false);
-                        var wins = betsResults[0] * 90.91;
-                        var losses = betsResults[1] * 100;
-                        totalProfit = totalProfit + (wins - losses);
-                    } else {
-                        var betsResults = getMoneyLineBetsWon(data, date);
-                        totalProfit = totalProfit + (betsResults[0] - betsResults[1]);
+        function getDataByDate(data){
+            var totalBets = 0;
+            var totalWins = 0
+            var totalLosses = 0;
+            var dataByDate = {};
+            var moneyLineTotalP = 0;
+            var moneyLineTotalL = 0;
+            data = data.filter(d =>  new Date(d.Date.substring(0, 10)).toLocaleDateString("en-US") !== "Invalid Date");
+            data.sort((a, b) => new Date(b.Date.substring(0, 10)) - new Date(a.Date.substring(0, 10))).reverse();
+            for (var i = 0; i < data.length; i++){
+                var date = data[i].Date.substring(0, 10);
+                if(new Date(date).toLocaleDateString("en-US") !== "Invalid Date"){
+                    if(!dataByDate[date]){
+                        dataByDate[date] = {wins: 0, losses: 0};
                     }
-                    
-                    var color = (totalProfit>0) ? "green" : "red";
-                    profitData.push({ x: new Date(date), y: totalProfit, color: color });
+                    if (data[i]["BET SPREAD"] === "W"){
+                        totalBets++;
+                        totalWins++;
+                        dataByDate[date].wins++;
+                    } else if (data[i]["BET SPREAD"] === "L"){
+                        totalBets++;
+                        totalLosses++;
+                        dataByDate[date].losses++;
+                    }
+                    if (data[i]["BET HOME"] === "W"){
+                        totalBets++;
+                        totalWins++;
+                        dataByDate[date].wins++;
+                    } else if (data[i]["BET HOME"] === "L"){
+                        totalBets++;
+                        totalLosses++;
+                        dataByDate[date].losses++;
+                    }
+                    if (data[i]["BET AWAY"] === "W"){
+                        totalBets++;
+                        totalWins++;
+                        dataByDate[date].wins++;
+                    } else if (data[i]["BET AWAY"] === "L"){
+                        totalBets++;
+                        totalLosses++;
+                        dataByDate[date].losses++;
+                    }
+                    if (data[i]["BET WIN"] === "W"){
+                        var oddsPercent = parseFloat(data[i]["Vegas MoneyLine Odds"].split("%")[0]);
+                        var moneyWon = oddsConverter(oddsPercent);
+                        moneyLineTotalP = moneyLineTotalP + moneyWon;
+                        var fractionOfMoney = moneyWon / 91;
+                        totalBets++;
+                        totalWins++;
+                        dataByDate[date].wins = dataByDate[date].wins + fractionOfMoney;
+                        /*console.log(
+                            data[i]["Name"],
+                            data[i]["Vegas MoneyLine Odds"], 
+                            moneyWon, 
+                            moneyLineTotalP
+                        )*/
+                    } else if (data[i]["BET WIN"] === "L"){
+                        totalBets++;
+                        totalLosses++;
+                        dataByDate[date].losses++;
+                        moneyLineTotalL++;
+                    }
+                    if (data[i]["BET TOTAL"] === "W"){
+                        totalBets++;
+                        totalWins++;
+                        dataByDate[date].wins++;
+                    } else if (data[i]["BET TOTAL"] === "L"){
+                        totalBets++;
+                        totalLosses++;
+                        dataByDate[date].losses++;
+                    }
                 }
+            }
+            //console.log('totalML' + moneyLineTotalP.toString(), moneyLineTotalL);
+            return dataByDate;
+        }
 
-            });
+        function getProfit(data, moneyline = true) {
+            var profitData = []
+            var dataByDate = getDataByDate(data);
+            var totalProfit = 0;
+            for (let [date, values] of Object.entries(dataByDate)) {
+                totalProfit = totalProfit + ((values.wins * 91) - (values.losses * 100));
+                var color = (totalProfit > 0) ? "green": "red";
+                profitData.push({ x: new Date(date), y: totalProfit, color: color})
+            }
             return profitData;
+        }
+
+        function getMoneyLineBetsWon(data, date) {
+            var wins = 0;
+            var losses = 0;
+            for (var i = 0; i < data.length; i++) {
+                if (data[i]["Date"].substring(0, 10) == date) {
+                    if (data[i]["BET WIN"] == "L") {
+                        losses = losses + 100;
+                        window.testLosses += 100;
+                    } else if (data[i]["BET WIN"] == "W") {
+                        var odds = parseFloat(data[i]["Vegas MoneyLine Odds"].split("%")[0]);
+                        wins = wins + oddsConverter(odds);
+                        window.testAmount += oddsConverter(odds);
+                    }
+                }
+            }
+            return [wins, losses];
+        }
+
+        function oddsConverter(odds) {
+            odds = odds / 100; //get percent
+            if (odds < 50) {
+                //For ‘plus’ moneylines, the formula is: 100 / (Moneyline + 100)
+                var moneyline = (100 / odds) - 100;
+                return parseInt(moneyline);
+            } else if (odds > 50) {
+                //For ‘minus’ moneylines, the formula is: Moneyline / -(100 – (Moneyline))
+                //  -100*odds / (odds-1)
+                var moneyline = parseInt(-(100 * odds) / (odds - 1));
+                var moneyWon = 10000 / moneyline
+                return parseInt(moneyWon);
+
+            }
         }
 
     </script>
@@ -1120,7 +1181,7 @@
             window.nbaData = getData();
             console.log(window.nbaData);
             var data = filterData(window.nbaData);
-            setTable(data);
+            setTable(getData());
             setChart(data, "chartContainer", false, "Winning Percentage");
             setLineChart(data, "lineChartContainer", false, "Total Profit");
 
